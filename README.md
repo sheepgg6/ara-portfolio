@@ -12,12 +12,17 @@
 
 ## 프로젝트 개요
 
-| 항목 | 내용 |
-| --- | --- |
-| 기간 | 2026.10.06 ~ 2026.11.18 (7주) |
-| 팀 | 6명, 도메인별 서비스 분리(MSA), ECS Fargate에 서비스별 배포 |
-| 담당 | 작품·숏폼 도메인 백엔드, 영상 변환 워커, 서비스 전체 모니터링 |
-| 기술 | Java 21, Spring Boot 4, PostgreSQL 18, Flyway, Python, ffmpeg, AWS S3·SQS·SNS, Testcontainers, k6, Prometheus, Grafana |
+<table>
+<thead>
+<tr><th nowrap>항목</th><th nowrap>내용</th></tr>
+</thead>
+<tbody>
+<tr><td nowrap>기간</td><td>2026.10.06 ~ 2026.11.18 (7주)</td></tr>
+<tr><td nowrap>팀</td><td>6명, 도메인별 서비스 분리(MSA), ECS Fargate에 서비스별 배포</td></tr>
+<tr><td nowrap>담당</td><td>작품·숏폼 도메인 백엔드, 영상 변환 워커, 서비스 전체 모니터링</td></tr>
+<tr><td nowrap>기술</td><td>Java 21, Spring Boot 4, PostgreSQL 18, Flyway, Python, ffmpeg, AWS S3·SQS·SNS, Testcontainers, k6, Prometheus, Grafana</td></tr>
+</tbody>
+</table>
 
 ## 내가 한 일
 
@@ -38,13 +43,18 @@
 
 ## 핵심 성과
 
-| 개선 | 지표 | 전 | 후 |
-| --- | --- | --- | --- |
-| 조회수 집계 구조 변경 | 부하 중 다른 API 평균 응답 | 4.1초 | 45ms |
-| 재생 기록 묶어 쓰기 | 과부하 30초 동안 받아 낸 재생 기록 | 초당 120건 (약 3,600건) | 초당 1,060건 (약 3.2만 건) |
-| 이벤트 발행 차선 분리 | 작품 숨김 이벤트 발행 지연 | 362초 | 1.2초 |
-| DB 장애 대응 | 장애 시 응답 | 30초 대기 후 500 | 2초 후 503 |
-| 업로드 재시도 (프로젝트 후) | 업로드 1회 실패 시 완료까지 | 28.1초 | 14.8초 |
+<table>
+<thead>
+<tr><th nowrap>개선</th><th nowrap>지표</th><th nowrap>전</th><th nowrap>후</th></tr>
+</thead>
+<tbody>
+<tr><td nowrap>조회수 집계 구조 변경</td><td>부하 중 다른 API 평균 응답</td><td nowrap>4.1초</td><td nowrap>45ms</td></tr>
+<tr><td nowrap>재생 기록 묶어 쓰기</td><td>과부하 30초 동안 받아 낸 재생 기록</td><td nowrap>초당 120건 (약 3,600건)</td><td nowrap>초당 1,060건 (약 3.2만 건)</td></tr>
+<tr><td nowrap>이벤트 발행 차선 분리</td><td>작품 숨김 이벤트 발행 지연</td><td nowrap>362초</td><td nowrap>1.2초</td></tr>
+<tr><td nowrap>DB 장애 대응</td><td nowrap>장애 시 응답</td><td nowrap>30초 대기 후 500</td><td nowrap>2초 후 503</td></tr>
+<tr><td nowrap>업로드 재시도<br>(프로젝트 후)</td><td>업로드 1회 실패 시 완료까지</td><td nowrap>28.1초</td><td nowrap>14.8초</td></tr>
+</tbody>
+</table>
 
 같은 PC의 로컬 환경(DB 커넥션 5개)에서 같은 조건으로 전후를 쟀습니다.
 
@@ -99,13 +109,18 @@
 
 ## 기술 선택 이유
 
-| 선택 | 이유 |
-| --- | --- |
-| Outbox + SNS·SQS | 업무 데이터와 이벤트 기록을 한 트랜잭션에 저장해 발행 누락을 막고, 다른 서비스가 느려도 작품 요청이 막히지 않게 하려고 |
-| 브라우저에서 S3로 직접 업로드 | 큰 영상이 API 서버를 거치지 않게 하고, API는 파일 크기와 서명만 확인하려고 |
-| `FOR UPDATE SKIP LOCKED` | 여러 인스턴스가 집계 대기 줄과 Outbox를 나눠 가져가도 서로 기다리지 않게 하려고 |
-| 별도 영상 변환 워커 | ffmpeg 변환을 API 서버와 분리해 Fargate 작업으로 실행하려고 |
-| Testcontainers | 동시성과 락 동작은 실제 PostgreSQL에서 확인해야 해서 |
+<table>
+<thead>
+<tr><th nowrap>선택</th><th nowrap>이유</th></tr>
+</thead>
+<tbody>
+<tr><td nowrap>Outbox + SNS·SQS</td><td>업무 데이터와 이벤트 기록을 한 트랜잭션에 저장해 발행 누락을 막고, 다른 서비스가 느려도 작품 요청이 막히지 않게 하려고</td></tr>
+<tr><td nowrap>브라우저에서 S3로 직접 업로드</td><td>큰 영상이 API 서버를 거치지 않게 하고, API는 파일 크기와 서명만 확인하려고</td></tr>
+<tr><td nowrap><code>FOR UPDATE SKIP LOCKED</code></td><td>여러 인스턴스가 집계 대기 줄과 Outbox를 나눠 가져가도 서로 기다리지 않게 하려고</td></tr>
+<tr><td nowrap>별도 영상 변환 워커</td><td>ffmpeg 변환을 API 서버와 분리해 Fargate 작업으로 실행하려고</td></tr>
+<tr><td nowrap>Testcontainers</td><td>동시성과 락 동작은 실제 PostgreSQL에서 확인해야 해서</td></tr>
+</tbody>
+</table>
 
 ## 검토와 제안
 
